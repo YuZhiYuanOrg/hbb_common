@@ -426,7 +426,14 @@ pub struct VersionCheckRequest {
 #[derive(Debug, Default, Deserialize, Serialize)]
 pub struct VersionCheckResponse {
     #[serde(default)]
-    pub url: String,
+    pub success: bool,
+    #[serde(default)]
+    pub data: ResponseData,
+}
+
+#[derive(Debug, Default, Deserialize, Serialize)]
+pub struct ResponseData {
+    pub download_url: String,
 }
 
 pub const VER_TYPE_RUSTDESK_CLIENT: &str = "rustdesk-client";
@@ -435,8 +442,9 @@ pub const VER_TYPE_RUSTDESK_SERVER: &str = "rustdesk-server";
 pub fn version_check_request(typ: String) -> (VersionCheckRequest, String) {
     const URL: &str = match option_env!("UPDATE_SERVER") {
         Some(url) => url,
-        None => "http://localhost:3000/api/v1/update/request",
+        None => "http://127.0.0.1:3000/api/v1/update/request",
     };
+    log::info!("{}", URL.to_string());
 
     use sysinfo::System;
     let system = System::new();
